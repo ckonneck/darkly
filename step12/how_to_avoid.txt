@@ -1,0 +1,40 @@
+leaking sensitive data, using private notes instead of a different platform to discuss things.
+not scoping the downloadfile folder properly.
+->serving files for download
+-> letting files be downloaded that aren't supposed to be downloaded
+Attacker-controlled forum post
+          │
+          ▼
+      Stored XSS
+          │
+          ▼
+Moderation bot renders the post
+          │
+          ▼
+JavaScript executes in bot's browser
+          │
+          ▼
+Bot has authenticated/session context
+          │
+          ▼
+fetch("/projects/download?...") succeeds
+          │
+          ▼
+Privileged application functionality exposed
+          │
+          ▼
+Sensitive CTF data / flag
+
+How you'd fix the chain
+
+You'd want multiple independent defenses:
+
+Sanitize/escape forum content → eliminates the stored XSS.
+Use a hardened bot context → don't give the bot unnecessary privileges.
+Separate moderation origin from sensitive application origin → limits same-origin access.
+Require explicit authorization on every sensitive endpoint → don't assume "bot is authenticated" means "bot should access everything."
+Constrain file access to an allowlisted directory/resource set → prevents arbitrary file retrieval.
+Don't expose internal infrastructure details in headers → reduces information leakage.
+Use CSP as defense-in-depth → makes script injection substantially harder to exploit.
+
+So the flag wasn't really obtained because of one bug. The interesting CTF lesson is that stored XSS + privileged automation + broad same-origin authorization can turn a seemingly low-level input-validation issue into a much larger compromise.

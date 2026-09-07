@@ -1,0 +1,4 @@
+
+#leaving api calls accessible for everyone, bad.
+#leaving "internal notes" in the website, bad.
+

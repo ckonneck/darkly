@@ -1,0 +1,4 @@
+leaking sensitive data, using private notes instead of a different platform to discuss things.
+not scoping the downloadfile folder properly.
+->serving files for download
+-> letting files be downloaded that aren't supposed to be downloaded

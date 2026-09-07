@@ -1,0 +1,4 @@
+curl -i \
+  -X GET \
+  'http://localhost:8090/api/collections/newsletter/records' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODcyMzI5NjYsImlkIjoiMmYyZzl1b3VycTNwMG1iIiwidHlwZSI6ImFkbWluIn0.SHiTayqc0qurwRCEXmPneMxsBx0rVtNtKzb5AsrN1tc'
