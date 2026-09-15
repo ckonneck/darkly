@@ -1,3 +1,3 @@
 FLAG{r3s3t_t0k3n_w4s_just_md5_lol}
 
-still dont know how to get the flag through the email reset, gotta be honest
+in plaintext viewable in the profile edit section of specific accounts

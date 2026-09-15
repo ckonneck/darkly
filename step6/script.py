@@ -122,8 +122,8 @@ targeturl = "http://localhost:4942/api/profile"
 
 question = input("its patch day! do you want to patch stupid stuff? Y/N :")
 
-if question == 'Y' or question == 'y':
-    answer = input("insert your very own patch string! ")
+if question.strip().lower() == 'y':
+    answer = input("insert your very own patch string! (1 word only) ")
     response = requests.patch(
             targeturl,
             cookies=cookies,

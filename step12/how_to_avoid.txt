@@ -37,4 +37,4 @@ Constrain file access to an allowlisted directory/resource set → prevents arbi
 Don't expose internal infrastructure details in headers → reduces information leakage.
 Use CSP as defense-in-depth → makes script injection substantially harder to exploit.
 
-So the flag wasn't really obtained because of one bug. The interesting CTF lesson is that stored XSS + privileged automation + broad same-origin authorization can turn a seemingly low-level input-validation issue into a much larger compromise.
+So the flag wasn't really obtained because of one bug. The lesson is that stored XSS + privileged automation + broad same-origin authorization can turn a seemingly low-level input-validation issue into a much larger compromise.

