@@ -1,3 +1,0 @@
-mail reset, research some more
-
-obv. require email confirmation for actually resetting and setting a new password

