@@ -1,3 +1,0 @@
-hardlinks referencing backend stuff, not to mention the credentials left in there.
-no 2fa.
-not rotated after some audits apparently.

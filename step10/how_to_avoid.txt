@@ -1,3 +1,0 @@
-#treat it as text only, maybe get rid of html.
-#unescaped html in forums
-#sanitize.

@@ -1,4 +1,4 @@
-# Secure File Upload — Best Practices
+# Secure File Upload 
 
 ## 1. Restrict Allowed File Types
 Maintain a strict whitelist of permitted extensions and MIME types. Reject anything not on it outright — never rely on a blocklist.

