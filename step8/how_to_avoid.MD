@@ -1,18 +1,16 @@
-# Sensitive Data Exposure via HTTP Headers
+# Weak JWT Secret
 
-## 1. Audit Response Headers Before Production
-Review every header returned by your application. Remove or restrict headers that reveal internal paths, agent versions, schedules, or infrastructure details.
+## 1. Use a Long, Random Secret
+Generate JWT secrets using a CSPRNG with at least 32 bytes of entropy (`secrets.token_hex(32)`). Never use short, guessable strings like `42network`.
 
-## 2. Return Minimal Error Responses
-On authentication failures (403, 401), return an empty body with no diagnostic headers. Operational metadata like backup destinations has no place in HTTP responses.
+## 2. Rotate Secrets Periodically
+Treat JWT secrets like passwords — rotate them on a schedule and immediately after any suspected compromise. Implement a grace period to avoid invalidating all active sessions at once.
 
-## 3. Strip Server Version Headers
-Disable or spoof `Server` and `X-Powered-By` headers. Advertising your stack (`uvicorn/0.24.0`, `Python/3.11`) helps attackers target known vulnerabilities.
+## 3. Use Asymmetric Signing (RS256)
+Switch from HS256 (shared secret) to RS256 (public/private key pair). The private key signs tokens; the public key verifies them. Compromise of the verification key does not allow forgery.
 
-## 4. Use a Reverse Proxy to Sanitize Headers
-Place nginx or a similar proxy in front of your application and configure it to strip internal headers before responses reach clients.
+## 4. Validate All Claims
+Always verify `exp` (expiry), `iss` (issuer), and `aud` (audience) on every token. Reject tokens missing required claims rather than treating them as optional.
 
-## 5. Separate Internal and External APIs
-Endpoints intended for internal tooling (backup agents, monitoring) should not be reachable from the public internet at all, regardless of what headers they return.
-
-## 6. Don't leave backend routes open or linked in the frontend
+## 5. Never Expose the Secret
+Secrets must never appear in source code, HTML comments, config endpoints, or version control. Load them exclusively from environment variables or a secrets manager.

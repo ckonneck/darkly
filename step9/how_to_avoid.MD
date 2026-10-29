@@ -1,16 +1,16 @@
-# Weak JWT Secret
+# Path Traversal
+ 
+## 1. Validate and Canonicalize File Paths
+Before accessing any file, resolve the full canonical path using os.path.realpath() and verify it starts with the intended base directory. A resolved path that escapes the base directory must be rejected outright.
 
-## 1. Use a Long, Random Secret
-Generate JWT secrets using a CSPRNG with at least 32 bytes of entropy (`secrets.token_hex(32)`). Never use short, guessable strings like `42network`.
+## 2. Strip Path Components from User Input
+Never use a client-supplied filename directly in a filesystem operation. Strip directory separators, .. sequences, and null bytes before use. os.path.basename() is a quick first pass but should always be combined with canonical path validation.
 
-## 2. Rotate Secrets Periodically
-Treat JWT secrets like passwords — rotate them on a schedule and immediately after any suspected compromise. Implement a grace period to avoid invalidating all active sessions at once.
+## 3. Use an Allowlist for Accessible Files
+Rather than trying to block dangerous patterns, maintain an explicit list or database of files that are permitted to be served. If a requested file isn't in the list, reject it — regardless of whether the path looks safe.
 
-## 3. Use Asymmetric Signing (RS256)
-Switch from HS256 (shared secret) to RS256 (public/private key pair). The private key signs tokens; the public key verifies them. Compromise of the verification key does not allow forgery.
+## 4. Serve Files Through a Controlled Handler
+Never expose a raw filesystem path as a URL parameter. Files should be referenced by an opaque ID (e.g. a UUID) that maps server-side to a real path. The client never sees or influences the filesystem path directly.
 
-## 4. Validate All Claims
-Always verify `exp` (expiry), `iss` (issuer), and `aud` (audience) on every token. Reject tokens missing required claims rather than treating them as optional.
-
-## 5. Never Expose the Secret
-Secrets must never appear in source code, HTML comments, config endpoints, or version control. Load them exclusively from environment variables or a secrets manager.
+## 5. Apply Depth and Character Restrictions
+Reject any input containing /, \, .., or null bytes (\x00) at the input validation layer before any path construction occurs. Additionally cap the permitted path depth — a filename that requires more than one level of directory traversal to resolve is almost certainly malicious.

@@ -1,16 +1,18 @@
-# Insecure Direct Object Reference (IDOR)
+# Sensitive Data Exposure via HTTP Headers
 
-## 1. Enforce Ownership Checks on Every Request
-Before returning any resource, verify the requesting user owns or has explicit permission to access it. Never rely solely on the ID being hard to guess.
+## 1. Audit Response Headers Before Production
+Review every header returned by your application. Remove or restrict headers that reveal internal paths, agent versions, schedules, or infrastructure details.
 
-## 2. Use Indirect References
-Map internal IDs to user-specific tokens so even if someone enumerates IDs, they cannot access another user's resources without a valid mapping.
+## 2. Return Minimal Error Responses
+On authentication failures (403, 401), return an empty body with no diagnostic headers. Operational metadata like backup destinations has no place in HTTP responses.
 
-## 3. Apply Role-Based Access Control (RBAC)
-Define what each role can read, write, and delete. Enforce these rules server-side on every endpoint, not just in the UI.
+## 3. Strip Server Version Headers
+Disable or spoof `Server` and `X-Powered-By` headers. Advertising your stack (`uvicorn/0.24.0`, `Python/3.11`) helps attackers target known vulnerabilities.
 
-## 4. Audit Sensitive Field Exposure
-Regularly review what fields are returned in API responses. Fields like `private_note`, `recovery_code`, and `pw_hint` should never appear in public-facing responses.
+## 4. Use a Reverse Proxy to Sanitize Headers
+Place nginx or a similar proxy in front of your application and configure it to strip internal headers before responses reach clients.
 
-## 5. Log and Monitor Access Patterns
-Detect enumeration attempts by logging sequential or high-volume ID lookups and alerting when patterns suggest automated scraping.
+## 5. Separate Internal and External APIs
+Endpoints intended for internal tooling (backup agents, monitoring) should not be reachable from the public internet at all, regardless of what headers they return.
+
+## 6. Don't leave backend routes open or linked in the frontend
