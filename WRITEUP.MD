@@ -183,7 +183,44 @@ god-tier export OK — flag retained for the security audit: FLAG{th3_und3rsc0r3
 **See step7**
 
 
+Tying up loose ends, there was another forum post by wil, the server admin.
+He left a 'Networks ops ref for the team' on http://localhost:4942/forum/bbeo32ucx0a65b8
+it was a short md5 encoded bit, which decoded to '42network', which turned out to be the JWT secret for the website, making it yet another angle to elevate privileges.
 
+**See step8**
+
+Having inspected many sublinks at this point, some of them held a lot more data than necessary.
+
+/backup especially opened a lot of views on the serverside structure and even had backup instructions written in the headers for what files to exclude.
+
+Obviously the goal was to now gain access to these "private_notes.txt"
+
+To achieve that, we exploited a path traversal in the download function.
+
+Due to the website offering to download projectfiles, in slightly manipulating the URL which it was offering, we changed the directory and managed to access the underlying files.
+
+
+original link: 
+http://localhost:4942/projects/download?file=legit_projectfile.prf
+
+changed link:
+http://localhost:4942/projects/download?file=../private_notes.txt
+
+
+**See step9**
+
+The last vulnerability we would like to showcase, is overarching mod privileges, paired with missing security functions, thus enabling enabling Cross-site-scripting(xss),
+on top of having an open api-exfiltration endpoint.
+
+In the forums, there is a "moderation bot" which scans every submitted forum post.
+
+This moderation bot essentially interprets everything, even scripts, and the output can be found on api/collect endpoint.
+
+??go more in depth, crosscheck the script too??
+
+??have the bot execute a shell to take command of everything??
+
+**See step10**
 
 
 
