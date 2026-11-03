@@ -193,6 +193,16 @@ Having inspected many sublinks at this point, some of them held a lot more data 
 
 /backup especially opened a lot of views on the serverside structure and even had backup instructions written in the headers for what files to exclude.
 
+date: Tue, 03 Nov 2026 10:49:05 GMT
+server: uvicorn
+allow: GET
+content-length: 31
+content-type: application/json
+x-powered-by: Python/3.11 FastAPI/0.104
+server: uvicorn/0.24.0 Linux
+x-pocketbase: http://localhost:8090
+x-42-internal: campus=paris
+
 Obviously the goal was to now gain access to these "private_notes.txt"
 
 To achieve that, we exploited a path traversal in the download function.
@@ -206,23 +216,28 @@ http://localhost:4942/projects/download?file=legit_projectfile.prf
 changed link:
 http://localhost:4942/projects/download?file=../private_notes.txt
 
+# 42 Network — internal ops note (NOT for the public webroot) — wil
+# reminder: rotate the pb_admin password after the security audit. (we won't.)
+# emilie keeps saying /projects/download joins paths without sanitizing. it's fine.
+recovery_flag=FLAG{d0t_d0t_sl4sh_4ll_th3_w4y_d0wn}
+
 
 **See step9**
 
-The last vulnerability we would like to showcase, is overarching mod privileges, paired with missing security functions, thus enabling enabling Cross-site-scripting(xss),
+The last vulnerability we would like to showcase, is overarching mod privileges, paired with missing security functions, thus enabling Cross-site-scripting(xss),
 on top of having an open api-exfiltration endpoint.
 
 In the forums, there is a "moderation bot" which scans every submitted forum post.
 
 This moderation bot essentially interprets everything, even scripts, and the output can be found on api/collect endpoint.
 
-??go more in depth, crosscheck the script too??
+So we post a fetch script in the forum, which the bot then reads and executes, fetching its own session cookie and presenting it to us on /api/collect
 
-??have the bot execute a shell to take command of everything??
+Since the bot has restricted access as well, it is enough to capture the flag, but not enough to escalate the access to gain the Command line interface or access to the underlying server.
 
 **See step10**
 
 
-
+All in all this was a fun (and sometimes frustrating) project. In my opinion it doesn't quite resemble real life practices as it should, but it does give you a broad view of what to look out for and check if you are pentesting a website.
 
 
